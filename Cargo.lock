@@ -3,7 +3,7 @@
 version = 3
 
 [[package]]
-name = "Rust-testAPI"
+name = "Rust_testAPI"
 version = "0.1.0"
 dependencies = [
  "actix-rt",
