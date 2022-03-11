@@ -1,21 +1,10 @@
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-
-async fn index() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-async fn index2() -> impl Responder {
-    HttpResponse::Ok().json("{\"message\":\"Hello world again!\"}")
-}
+use actix_web::{App, HttpServer};
+use Rust_testAPI::routes;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .route("/", web::get().to(index))
-            .route("/again", web::get().to(index2))
-    })
-    .bind("127.0.0.1:3000")?
-    .run()
-    .await
+    HttpServer::new(|| App::new().configure(routes::routes))
+        .bind("localhost:8000")?
+        .run()
+        .await
 }
