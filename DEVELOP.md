@@ -3,6 +3,33 @@
 
 ## 参考資料
 
+### Rust
+
+- [RustのOptionとResult](https://qiita.com/take4s5i/items/c890fa66db3f71f41ce7)
+```
+fn get_value_good(v: bool) -> Option<usize> {
+    if v {
+        Some(100)
+    } else {
+        None
+    }
+}
+
+match get_value_good(true) {
+        Some(result) => println!("success: {}", result),
+        None => println!("failure"),
+    }
+```
+
+- [Rustの構造体などに追加できる振る舞いを確認する](https://qiita.com/apollo_program/items/2495dda519ae160971ed)
+```
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TodoComments {
+    pub todo_id: i32,
+    pub comments: Vec<TodoComment>
+}
+```
+
 ### Actix-web
 - [依存関係 v4.0.1](https://crates.io/crates/actix-web/4.0.1/dependencies)
 - [Actix Web](https://actix.rs/)
@@ -10,6 +37,7 @@
 - [actix-webでmongodbを利用する](https://qiita.com/deepgreenAN/items/28e8d41a71620842060d)
 
 #### example
+
 ##### サーバーの起動
 ```
     HttpServer::new(|| App::new().configure(routes::routes)) //routesは他ファイルで定義したルーティング
@@ -21,6 +49,7 @@
 ### MongoDB
 - [開発用データベース](https://cloud.mongodb.com/v2/622db946a2407f364c4c2e4d#clusters)
 - [公式ドキュメント](https://docs.mongodb.com/)
+- [MongoDB-Rust-Driver Github](https://github.com/mongodb/mongo-rust-driver/)
 
 #### DB取得等
 
