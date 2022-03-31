@@ -1,27 +1,35 @@
 use actix_web::{App, HttpServer};
+use std::sync::*;
 use mongodb::{Client,options::{ClientOptions,ResolverConfig},bson::{doc,Document}};
-use tokio;
 use actix_rt;
-use Rust_testAPI::routes;
+mod routes;
+use std::env;
+use dotenvy::dotenv;
+
+fn get_connection_string() -> String {
+  let host = env::var("MONGO_HOST").expect("MONGO_HOST env not set."); 
+  let user = env::var("MONGO_USER").expect("MONGO_USER env not set."); 
+  let password = env::var("MONGO_PASSWORD").expect("MONGO_PASSWORD env not set."); 
+  let query = env::var("MONGO_QUERY").expect("MONGO_QUERY env not set."); 
+  "mongodb+srv://".to_owned() + &user + ":" + &password + "@" + &host + "?" + &query
+}
+
+async fn create_mongo_client() -> Result<Client,mongodb::error::Error> {
+  let client_options = ClientOptions::parse(
+      get_connection_string(),
+  ).await?;
+  let client = Client::with_options(client_options);
+  client
+}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+      let client = Arc::new(create_mongo_client().await.unwrap());
+      println!("CLIENTを取得しました！");
     
-    //MongoDB用意
-
-    let client_options = ClientOptions::parse(
-        "mongodb+srv://0113ryo2000:0113ryo2000@rust-testapi.kxdjy.mongodb.net/Rust_testAPI?retryWrites=true&w=majority",
-    )
-    .await.expect("Database Link Error.");
-
-// Get a handle to the deployment.
-let client = Client::with_options(client_options).expect("Some error message");
-
-let database = client.database("Rust-testAPI");
-
-let collection = database.collection::<Document>("Test");
   //APIサーバー用意
-    HttpServer::new(|| App::new().configure(routes::routes))
+    HttpServer::new(move || App::new().app_data(client.clone()).configure(routes::routes))
         .bind("localhost:8000")?
         .run()
         .await
